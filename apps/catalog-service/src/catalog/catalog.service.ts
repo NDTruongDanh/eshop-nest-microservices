@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { CatalogRepository } from './repositories/catalog.repository';
 import { Product } from './entities/product.entity';
 import {
@@ -46,7 +47,11 @@ export class CatalogService {
     const product = await this.catalogRepository.findById(request.id);
 
     if (!product) {
-      throw new NotFoundException(`Product with id ${request.id} not found`);
+      throw new RpcException({
+        statusCode: 404,
+        message: `Product with id ${request.id} not found`,
+        error: 'Not Found',
+      });
     }
     return {
       product: product.toJson(),

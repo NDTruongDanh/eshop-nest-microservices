@@ -4,6 +4,7 @@ import {
   CATALOG_PATTERNS,
   CreateProductRequest,
   CreateProductResponse,
+  GetProductByIdRequest,
   GetProductByIdResponse,
   GetProductsRequest,
   GetProductsResponse,
@@ -33,11 +34,13 @@ export class CatalogGatewayService {
     );
   }
 
-  getProductById(payload: { id: string }): Promise<GetProductByIdResponse> {
+  getProductById(
+    params: GetProductByIdRequest,
+  ): Promise<GetProductByIdResponse> {
     return firstValueFrom(
-      this.catalogClient.send<GetProductByIdResponse, { id: string }>(
+      this.catalogClient.send<GetProductByIdResponse, GetProductByIdRequest>(
         CATALOG_PATTERNS.GET_PRODUCT_BY_ID,
-        payload,
+        { id: params.id },
       ),
     );
   }
