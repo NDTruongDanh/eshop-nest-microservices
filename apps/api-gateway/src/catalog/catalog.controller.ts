@@ -1,76 +1,34 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, catchError, throwError, timeout } from 'rxjs';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+
 import {
-  CATALOG_PATTERNS,
   CreateProductRequest,
   CreateProductResponse,
   GetProductByIdParams,
-  GetProductByIdRequest,
   GetProductByIdResponse,
   GetProductsResponse,
 } from '@app/contracts';
-import { rpcToHttpException } from '../common/rpc-to-http-exception';
+import { CatalogGatewayService } from './catalog.service';
 
 @Controller('catalog/products')
-export class CatalogController {
-  constructor(
-    @Inject('CATALOG_SERVICE')
-    private readonly catalogClient: ClientProxy,
-  ) {}
+export class CatalogGatewayController {
+  constructor(private readonly catalogGatewayService: CatalogGatewayService) {}
 
   @Post()
-  async createProduct(
-    @Body() body: CreateProductRequest,
+  createProduct(
+    @Body() payload: CreateProductRequest,
   ): Promise<CreateProductResponse> {
-    return firstValueFrom(
-      this.catalogClient
-        .send<
-          CreateProductResponse,
-          CreateProductRequest
-        >(CATALOG_PATTERNS.CREATE_PRODUCT, body)
-        .pipe(
-          timeout(5000),
-          catchError((error) => {
-            return throwError(() => rpcToHttpException(error));
-          }),
-        ),
-    );
+    return this.catalogGatewayService.createProduct(payload);
   }
 
   @Get()
-  async getProducts(): Promise<GetProductsResponse> {
-    return firstValueFrom(
-      this.catalogClient
-        .send<
-          GetProductsResponse,
-          Record<string, never>
-        >(CATALOG_PATTERNS.GET_PRODUCTS, {})
-        .pipe(
-          timeout(5000),
-          catchError((error) => {
-            return throwError(() => rpcToHttpException(error));
-          }),
-        ),
-    );
+  getProducts(): Promise<GetProductsResponse> {
+    return this.catalogGatewayService.getProducts();
   }
 
   @Get(':id')
-  async getProductById(
+  getProductById(
     @Param() params: GetProductByIdParams,
   ): Promise<GetProductByIdResponse> {
-    return firstValueFrom(
-      this.catalogClient
-        .send<
-          GetProductByIdResponse,
-          GetProductByIdRequest
-        >(CATALOG_PATTERNS.GET_PRODUCT_BY_ID, { id: params.id })
-        .pipe(
-          timeout(5000),
-          catchError((error) => {
-            return throwError(() => rpcToHttpException(error));
-          }),
-        ),
-    );
+    return this.catalogGatewayService.getProductById({ id: params.id });
   }
 }
