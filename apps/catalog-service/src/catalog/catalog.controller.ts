@@ -3,11 +3,11 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import {
   CATALOG_PATTERNS,
-  type CreateProductRequest,
-  type CreateProductResponse,
-  type GetProductsResponse,
+  CreateProductRequest,
+  CreateProductResponse,
+  GetProductsResponse,
   type GetProductByIdRequest,
-  type GetProductByIdResponse,
+  GetProductByIdResponse,
 } from '@app/contracts';
 
 import { CatalogService } from './catalog.service';

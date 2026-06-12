@@ -1,3 +1,12 @@
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+} from 'class-validator';
+
 export type ProductDto = {
   id: string;
   name: string;
@@ -7,13 +16,28 @@ export type ProductDto = {
   price: number;
 };
 
-export type CreateProductRequest = {
+export class CreateProductRequest {
+  @IsString()
+  @IsNotEmpty()
   name: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
   category: string[];
+
+  @IsString()
+  @IsNotEmpty()
   description: string;
+
+  @IsString()
+  @IsNotEmpty()
   imageFile: string;
+
+  @IsNumber()
+  @IsPositive()
   price: number;
-};
+}
 
 export type CreateProductResponse = {
   product: ProductDto;

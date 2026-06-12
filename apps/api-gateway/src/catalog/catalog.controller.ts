@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
-import type {
+import {
   CreateProductRequest,
   CreateProductResponse,
   GetProductByIdResponse,
